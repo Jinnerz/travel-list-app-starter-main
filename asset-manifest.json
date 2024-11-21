@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/Jinnerz/travel-list-app-starter-main/static/css/main.83df17a1.css",
-    "main.js": "/Jinnerz/travel-list-app-starter-main/static/js/main.f7239e70.js",
-    "index.html": "/Jinnerz/travel-list-app-starter-main/index.html",
-    "main.83df17a1.css.map": "/Jinnerz/travel-list-app-starter-main/static/css/main.83df17a1.css.map",
-    "main.f7239e70.js.map": "/Jinnerz/travel-list-app-starter-main/static/js/main.f7239e70.js.map"
+    "main.css": "/travel-list-app-starter-main/static/css/main.83df17a1.css",
+    "main.js": "/travel-list-app-starter-main/static/js/main.f7239e70.js",
+    "index.html": "/travel-list-app-starter-main/index.html",
+    "main.83df17a1.css.map": "/travel-list-app-starter-main/static/css/main.83df17a1.css.map",
+    "main.f7239e70.js.map": "/travel-list-app-starter-main/static/js/main.f7239e70.js.map"
   },
   "entrypoints": [
     "static/css/main.83df17a1.css",
