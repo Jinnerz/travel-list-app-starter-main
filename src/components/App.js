@@ -1,99 +1,38 @@
 import { useState } from "react";
-
-function Logo() {
-  return <h1>My Travel List</h1>;
-}
-
-function Form({handleAddItems}) {
-  const [description, setDescription] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  
-  const date = new Date();
-  const timeNow = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-  // Can do this because the state also in this component
-  // Will be taken from the updated states
-  function handleSubmit(e) {
-    e.preventDefault();
-    const newItem = {
-      id: timeNow,
-      description: description,
-      quantity: quantity,
-      packed: false
-    };
-    handleAddItems(newItem);
-
-    setDescription('');
-    setQuantity(1);
-  }
-
-  function handleDescription(e) {
-    setDescription(e.target.value);
-  }
-
-  function handleQuantity(e) {
-    setQuantity(Number(e.target.value));
-  }
-  
-  
-
-  return (
-    <form className="add-form" onSubmit={handleSubmit}>
-      <h3>What do you need to pack?</h3>
-      <select value={quantity} onChange={handleQuantity}>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-      </select>
-      <input value={description} onChange={handleDescription} type="text" placeholder="Item..."/>
-      <button>Add</button>
-    </form>
-  );
-}
-
-function PackingList(props) {
-  return (
-    <div className="list">
-      <ul>
-        {props.filteredItems.map((item) => (
-          <Item key={item.id} item={item} handlePacked={props.handlePacked} handleDelete={props.handleDelete} />
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-// The "props" is 1 of the entire { }, e.g. the array of the id, description, quantity, packed
-// textDecoration: None can help do nothing if it still hasnt been packed
-// textDecoration: line-through will appear if its already packed
-function Item(props) {
-  return(
-    <div>
-      <li style={{ textDecoration: props.item.packed ? 'line-through' : 'none'}}>
-        <input type="checkbox" checked={props.item.checked} onChange={() => props.handlePacked(props.item.description)}/>
-        {props.item.description} ({props.item.quantity})
-        {/* Conditional to only render the delete button if its packed (true) true=dont show*/}
-        {!props.item.packed && <input style={{backgroundColor:'red'}} type="button" value="Delete" onClick={() => props.handleDelete(props.item.description)}/> }
-      </li>
-    </div>
-  )
-}
-
-function Stats(props) {
-  return (
-    <footer className="stats">
-      <em>You have {props.length} items in the list. You already packed {props.handleStats()} ({Math.round(props.handleStats() / props.length * 100)}%).</em>
-    </footer>
-  );
-}
+import Logo from './Logo';
+import Form from './Form';
+import PackingList from "./PackingList";
+// import Item from "./Item";
+import Stats from './Stats';
 
 function App() {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('');
 
-  const filteredItems = items.filter(item =>
+  //Sorting and Searching, array.sort((a, b) => {}); a and b are two elements being compared in an array
+  // < 0 ,a comes before b
+  // > 0,a comes after b
+  // 0, no change in order 
+  // sortOption are taken from the useState, which is then set by a dropdown option for the user to click and set different values to the useState
+  const filteredItems = items.filter((item) =>
     item.description.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  ).sort((a, b) => {
+    if (sortOption === 'name') {
+      //This returns -1/0/1 depending on the localeCompare
+      return a.description.localeCompare(b.description);
+    } else if (sortOption === 'quantity') {
+      return a.quantity - b.quantity;
+    } else if (sortOption === 'packed') {
+      return a.packed === b.packed ? 0 : a.packed ? 1 : -1;
+    } else {
+      return 0;
+    }
+  });
 
+  function handleSort(e) {
+    setSortOption(e.target.value);
+  }
 
   function handleAddItems(item) {
     setItems((prevItems) => [...prevItems, item]);
@@ -133,28 +72,8 @@ function App() {
   return (
     <div className="app">
       <Logo />
-      <Form handleAddItems={handleAddItems}/>
-
-      <div className="searchBox">
-        {searchTerm && (
-          <h4 className="tagline">Search results for "{searchTerm}"</h4>
-        )}
-
-        <input 
-          type="text"
-          placeholder="Search for item..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)} 
-          className="search-bar"
-        />
-
-        {/* Show a message if no pizzas match */}
-        {filteredItems.length === 0 && searchTerm && (
-            <p>No items found with that name.</p>
-        )}
-      </div>
-      
-      <PackingList filteredItems={filteredItems} handlePacked={handlePacked} handleDelete={handleDelete} />
+      <Form handleAddItems={handleAddItems} setItems={setItems} setSearchTerm={setSearchTerm}/>
+      <PackingList setSearchTerm={setSearchTerm} searchTerm={searchTerm} filteredItems={filteredItems} handlePacked={handlePacked} handleDelete={handleDelete} handleSort={handleSort} sortOption={sortOption} />
       <Stats length={items.length} handleStats={handleStats}/>
     </div>
   );
